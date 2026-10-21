@@ -87,6 +87,9 @@ rebase was clean, 6 commits, zero conflicts):
   server (23.8/24.6 GB VRAM, 270 W) — fine for reads, pause the load for
   write tests and benches.
   - RESULT (pending): which domains report non-zero ranges on AD102/615:
+  - CORRECTION 2026-10-21: there is no separate lact-daemon binary — the
+    workspace builds one `lact` binary and the daemon is `lact daemon`
+    (same as the systemd ExecStart). Handed corrected commands to owner.
 - P2: propagation ratio probe (read-only first — layout proven on GB202
   only); per-domain physical-clock display via CLK_MEASURE_FREQ.
 - P3: domain V/F display (already in stack); #1218 implementation.
