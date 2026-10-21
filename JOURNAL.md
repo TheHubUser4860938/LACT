@@ -77,10 +77,16 @@ rebase was clean, 6 commits, zero conflicts):
 
 - P0 (done 2026-10-21): clone, remotes (upstream / panchovix / loong0x00),
   stack rebase onto upstream/master — clean, 6 commits.
-- P1: cargo check/build green; run the PR's ignored round-trip test
-  (LACT_TEST_GPU_MINOR); read-only GET_INFO dump on AD102/615 — record which
-  domains report non-zero ranges here; then short SET/read-back/restore on
-  XBAR, then SYS.
+- P1: cargo check/build green (measured 2026-10-21: check 28.6 s, build
+  36.7 s). Debug binaries ready. Daemon swap needs the owner's sudo
+  (password prompt; agent cannot). Sequence given to owner; probe = fork
+  daemon + fork GUI, look for domain rows with non-zero ranges on AD102
+  driver 615.78.08 via the PR's type-checked 0x0b decode. Read-only first;
+  writes (the PR's ignored round-trip test, LACT_TEST_GPU_MINOR) only after
+  the read picture is clean. Note: the 4090 carries the live inference
+  server (23.8/24.6 GB VRAM, 270 W) — fine for reads, pause the load for
+  write tests and benches.
+  - RESULT (pending): which domains report non-zero ranges on AD102/615:
 - P2: propagation ratio probe (read-only first — layout proven on GB202
   only); per-domain physical-clock display via CLK_MEASURE_FREQ.
 - P3: domain V/F display (already in stack); #1218 implementation.
