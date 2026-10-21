@@ -120,6 +120,22 @@ rebase was clean, 6 commits, zero conflicts):
     (same as the systemd ExecStart). Handed corrected commands to owner.
   - PENDING: rows + ranges on the 4090 from the root-daemon run; then first
     write (small offset, exact read-back, restore).
+  - IMPLEMENTED 2026-10-21 (per owner's instruction: read first; write test
+    only if the read shows nothing new; layout verified before writing):
+    new debug bin lact-daemon/src/bin/clkdom_probe.rs (auto-detected bin
+    target). Read mode: GET_INFO (per-entry object type + ranges, with raw
+    audit bytes at both the 0x10 and the 0x0b range offsets), GET_CONTROL
+    (rail fields), CLK_MEASURE_FREQ per active domain, PROP_RELS info+control
+    (type-3 ratio question for AD102). Write mode (--write-test <domain> uV,
+    opt-in): daemon's own discipline — full preimage, one field, SET,
+    readback, full restore, exact-restore check, physical clock before/after.
+    Layout cross-checked three ways: the daemon struct matches Loong0x00's
+    hardware-verified layout on #1147 byte for byte (control base 0x3c,
+    stride 0x40, MSVDD field at entry+0x14); the daemon's compile-time size
+    asserts match the threads' measured sizes (0x3030/0x83c); and the same
+    control block already applies XBAR +225 on this box for frequency, so
+    the struct layout is proven correct here and the rail field is the only
+    open question.
 - P2: propagation ratio probe (read-only first — layout proven on GB202
   only); per-domain physical-clock display via CLK_MEASURE_FREQ.
 - P3: domain V/F display (already in stack); #1218 implementation.
