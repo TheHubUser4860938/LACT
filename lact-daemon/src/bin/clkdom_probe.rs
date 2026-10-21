@@ -340,8 +340,10 @@ fn main() {
 
     let fd = nvidiactl.as_raw_fd();
     unsafe {
-        let mut device_raw = device_fd.as_raw_fd();
-        register_fd(fd, &raw mut device_raw).expect("REGISTER_FD");
+        // The daemon's order exactly: the ioctl runs on the device fd and its
+        // argument is the control fd (driver.rs register_fd call).
+        let mut control_raw = nvidiactl.as_raw_fd();
+        register_fd(device_fd.as_raw_fd(), &mut control_raw).expect("REGISTER_FD");
     }
 
     let client = unsafe {
@@ -388,7 +390,7 @@ fn main() {
             h_class: NV20_SUBDEVICE_0,
             p_alloc_parms: &raw const alloc as u64,
             p_rights_requested: 0,
-            params_size: mem::size_of::<Nv2080Alloc>() as u64 as u32,
+            params_size: mem::size_of::<Nv2080Alloc>() as u32,
             flags: 0,
             status: 0,
         };

@@ -141,6 +141,11 @@ rebase was clean, 6 commits, zero conflicts):
     control block already applies XBAR +225 on this box for frequency, so
     the struct layout is proven correct here and the rail field is the only
     open question.
+  - FIX 2026-10-21 (owner ran it): REGISTER_FD panicked EINVAL — my bug, the
+    call was inverted. The daemon issues the ioctl on the DEVICE fd with the
+    control fd as the argument (driver.rs); I had it the other way. Polished
+    to mirror the daemon exactly, rebuilt clean. Root was never the issue at
+    that line — re-run handed back to owner.
 - P2: propagation ratio probe (read-only first — layout proven on GB202
   only); per-domain physical-clock display via CLK_MEASURE_FREQ.
 - P3: domain V/F display (already in stack); #1218 implementation.
