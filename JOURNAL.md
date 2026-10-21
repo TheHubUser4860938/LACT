@@ -120,6 +120,11 @@ rebase was clean, 6 commits, zero conflicts):
     (same as the systemd ExecStart). Handed corrected commands to owner.
   - PENDING: rows + ranges on the 4090 from the root-daemon run; then first
     write (small offset, exact read-back, restore).
+  - HANDOFF 2026-10-21: probe built and committed; unprivileged run confirmed
+    the permission wall (RM ioctl EINVAL/0x1b for non-root — matches #1159's
+    finding). Handed owner the two commands: read dump first; the +10 mV
+    write test on XBAR only if the read shows nothing new (owner's rule).
+    Write test restores the full preimage — XBAR +225 passes through intact.
   - IMPLEMENTED 2026-10-21 (per owner's instruction: read first; write test
     only if the read shows nothing new; layout verified before writing):
     new debug bin lact-daemon/src/bin/clkdom_probe.rs (auto-detected bin
