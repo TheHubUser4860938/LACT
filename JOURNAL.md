@@ -95,11 +95,19 @@ rebase was clean, 6 commits, zero conflicts):
     - SYS: follows XBAR on its own (matches the RTX 2000 Ada observation on
       the PR and the propagation model); adding an offset to SYS on top of
       XBAR = unstable. Do not double-tune propagation-linked domains.
-    - MSVDD: write fails on this card/branch (error text pending). Plausible
-      cause: PR's field layout was derived on R610; this box is R615 and the
-      layout is branch-specific — the frequency field happens to decode, the
-      MSVDD field offset may have moved. Diagnosis: byte-diff GET_CONTROL
-      before/after write; do not retry blindly.
+    - MSVDD: write fails on this card/branch. Error decoded 2026-10-21 from
+      NVIDIA's nvstatuscodes.h (open-gpu-kernel-modules, fetched): status
+      0x2c = NV_ERR_INVALID_INDEX. Frequency-offset writes on the same entry
+      work (owner runs XBAR +225 live); only the rail-voltage field is
+      rejected. Interpretation (inference, labeled): on Ada the per-domain
+      rail-arbitration mapping has no entry — the MSVDD control layer is
+      Blackwell-only in practice; frequency offsets are per-domain, rail
+      offsets are not. mVolt+ on Ada does voltage per-pstate via a different
+      control, consistent with this. First AD102 data point for #1158/#1147.
+    - Owner-run result 2026-10-21: XBAR +225 stable and adopted (effective
+      ~2700 MHz under load); Control: Resonance 122 -> 126-128 fps (+3.3-4.9%,
+      single runs). SYS follows XBAR; direct SYS offset on top = unstable
+      (matches propagation model — do not double-tune dependent domains).
   - CONFIRMED 2026-10-21 (owner's first run): the GET_INFO read path works on
     AD102 + driver 615.78.08 — the fork GUI showed the XBAR and other domain
     rows on this card. First such data point (upstream only ever probed
