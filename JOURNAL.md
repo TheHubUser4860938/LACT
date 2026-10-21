@@ -86,7 +86,20 @@ rebase was clean, 6 commits, zero conflicts):
   the read picture is clean. Note: the 4090 carries the live inference
   server (23.8/24.6 GB VRAM, 270 W) — fine for reads, pause the load for
   write tests and benches.
-  - RESULT (pending): which domains report non-zero ranges on AD102/615:
+  - RESULT 2026-10-21 (owner's run, root daemon + fork GUI): the tool works
+    on AD102 + driver 615.78.08.
+    - XBAR offset +225 MHz applied; effective ~2700 MHz under load (full
+      adoption at this offset — unlike Blackwell's power-capped partials).
+    - Game data (Control: Resonance, single runs, not yet A/B/A):
+      122 fps stock -> 126-128 fps at XBAR +225 (~+3.3 to +4.9%). Ada responds.
+    - SYS: follows XBAR on its own (matches the RTX 2000 Ada observation on
+      the PR and the propagation model); adding an offset to SYS on top of
+      XBAR = unstable. Do not double-tune propagation-linked domains.
+    - MSVDD: write fails on this card/branch (error text pending). Plausible
+      cause: PR's field layout was derived on R610; this box is R615 and the
+      layout is branch-specific — the frequency field happens to decode, the
+      MSVDD field offset may have moved. Diagnosis: byte-diff GET_CONTROL
+      before/after write; do not retry blindly.
   - CONFIRMED 2026-10-21 (owner's first run): the GET_INFO read path works on
     AD102 + driver 615.78.08 — the fork GUI showed the XBAR and other domain
     rows on this card. First such data point (upstream only ever probed
