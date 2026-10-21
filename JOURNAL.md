@@ -146,6 +146,29 @@ rebase was clean, 6 commits, zero conflicts):
     control fd as the argument (driver.rs); I had it the other way. Polished
     to mirror the daemon exactly, rebuilt clean. Root was never the issue at
     that line — re-run handed back to owner.
+  - RESULT 2026-10-21 (owner ran the probe as root — first AD102/615.78.08
+    topology table, full output pasted in chat):
+    - All domains report board object type 0x0b; the PR's older-layout decode
+      works (audit rows confirm ranges read from the 0x22 path).
+    - Adjustable ranges: GPC -1000/+8000, XBAR/SYS/PWR -1000/+1000, MEMORY
+      -1000/+5000. Same five domains adjustable as Blackwell.
+    - Control readback is live on Ada: XBAR row shows freq_off 210000 kHz —
+      the owner's current GUI setting (+210). Rail fields read 0 — the rail
+      question stays open; the write test is the instrument for it.
+    - PROP_RELS: AD102 reports ALL relationships as type 5, no type-3 ratio —
+      per the driver's own rule the propagation-ratio control does not exist
+      on this card (same behavior as the RTX 5090). Topology confirmed:
+      GPC→XBAR, XBAR→SYS/HUB/PWR, MEMORY→XBAR/SYS/HUB/PWR — which is why SYS
+      rides XBAR and cannot be independently tuned.
+    - Physical clocks at light load (inference server resident): GPC 1004,
+      XBAR 1917, MEM 12004 (owner's +3000 mem OC live), SYS 1780, PWR 1532,
+      HUB 1333 (all MHz).
+    - MEMORY range: RM advertises +5000 vs NVML's +3000 ceiling — #1218 is
+      real range, but the owner is silicon-stable only to +3000 anyway, so it
+      buys him nothing personal; it stays the build target for the record.
+    - Owner's operating point: XBAR +210 (hovers 2685-2700 under load) with
+      SYS at its 2505 crash line; core 3030@1100 mV; mem +3000 (12001).
+      Ratio lever confirmed DEAD on this card by its own topology.
 - P2: propagation ratio probe (read-only first — layout proven on GB202
   only); per-domain physical-clock display via CLK_MEASURE_FREQ.
 - P3: domain V/F display (already in stack); #1218 implementation.
