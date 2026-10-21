@@ -87,9 +87,18 @@ rebase was clean, 6 commits, zero conflicts):
   server (23.8/24.6 GB VRAM, 270 W) — fine for reads, pause the load for
   write tests and benches.
   - RESULT (pending): which domains report non-zero ranges on AD102/615:
+  - CONFIRMED 2026-10-21 (owner's first run): the GET_INFO read path works on
+    AD102 + driver 615.78.08 — the fork GUI showed the XBAR and other domain
+    rows on this card. First such data point (upstream only ever probed
+    GB202/GB203 + RTX 2000 Ada).
+  - CONFIRMED 2026-10-21: writes from an unprivileged RM client fail with
+    status 0x1b (NV_ERR_INSUFFICIENT_PERMISSIONS), exactly as documented on
+    #1159. Root daemon required; GUI standalone = user = 0x1b.
   - CORRECTION 2026-10-21: there is no separate lact-daemon binary — the
     workspace builds one `lact` binary and the daemon is `lact daemon`
     (same as the systemd ExecStart). Handed corrected commands to owner.
+  - PENDING: rows + ranges on the 4090 from the root-daemon run; then first
+    write (small offset, exact read-back, restore).
 - P2: propagation ratio probe (read-only first — layout proven on GB202
   only); per-domain physical-clock display via CLK_MEASURE_FREQ.
 - P3: domain V/F display (already in stack); #1218 implementation.
