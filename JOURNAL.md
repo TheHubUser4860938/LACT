@@ -169,6 +169,31 @@ rebase was clean, 6 commits, zero conflicts):
     - Owner's operating point: XBAR +210 (hovers 2685-2700 under load) with
       SYS at its 2505 crash line; core 3030@1100 mV; mem +3000 (12001).
       Ratio lever confirmed DEAD on this card by its own topology.
+  - WRITE TEST 2026-10-21 (owner ran --write-test 1 10000 — the pre-authorized
+    +10 mV step; rubric fixed before the run: status 0 + exact echo = field
+    lives; 0x2c = closed). Result: SET on the full block with ONLY rail slot 1
+    of entry 1 changed answered status 0x2c (NV_ERR_INVALID_INDEX per
+    nvstatuscodes.h). Nothing written, nothing to restore, card state untouched
+    — verified by the owner's overlay right after: XBAR 2700 (= 2490 base
+    + 210, full grant at top state), SYS 2505 at its crash line, SM 3030.
+    CLOSED BY INSTRUMENT: the per-domain rail field has no mapped rail index
+    on AD102/R615 — Blackwell-only in practice. Consequence for the panel:
+    rail offsets must not be offered on this card (the GUI's failing MSVDD
+    field is now explained, root cause = RM rail table has no entry here).
+  - CROSS-CHECK 2026-10-21 (overlay idle+load shots vs probe rows): GPC row
+    matches SM at idle (1004 vs 1005), SYS matched at idle (1780 vs 1785), and
+    the probe's XBAR/SYS rows are consistent with +210 applied at every state
+    (idle XBAR 1934 = 1724+210, SYS 1783; load XBAR 2700 = 2490+210). The
+    overlay-vs-probe gaps on the XBAR/HUB/PWR rows are moment-to-moment V/F
+    state drift, not layout errors; the probe name table stays labels, not
+    claims. Memory row live: 12010 MHz (= +3000, full-board; satisfies the
+    finite-MCLK constraint from NVIDIA#1266, which is why XBAR gets its full
+    grant at the top of the curve).
+  - UPSTREAM DATA POINT (drafted, pending owner's post to #1147/#1158):
+    first AD102/R615 topology table; all-type-5 (no ratio control on this
+    card); bare rail write rejected 0x2c while frequency writes on the same
+    control succeed; RM memory range −1000/+5000 vs NVML +3000 (#1218 gap is
+    real on Ada). All instrumented on this box, labeled as such.
 - P2: propagation ratio probe (read-only first — layout proven on GB202
   only); per-domain physical-clock display via CLK_MEASURE_FREQ.
 - P3: domain V/F display (already in stack); #1218 implementation.
