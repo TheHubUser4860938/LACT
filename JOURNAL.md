@@ -189,6 +189,21 @@ rebase was clean, 6 commits, zero conflicts):
     claims. Memory row live: 12010 MHz (= +3000, full-board; satisfies the
     finite-MCLK constraint from NVIDIA#1266, which is why XBAR gets its full
     grant at the top of the curve).
+  - DECISION 2026-10-22 — boot persistence (the pending item, now made): the
+    fork is the default daemon. Release build of the unified `lact` binary
+    installed at /usr/local/bin/lact (unowned by pacman; stock /usr/bin/lact
+    untouched and reversible). lactd.service (was disabled — the reason nothing
+    survived reboot) gets a drop-in at /etc/systemd/system/lactd.service.d/
+    fork.conf with an absolute-path ExecStart, then enable --now. Boot apply
+    happens by itself: current_profile "OC 1" carries XBAR 1: 210, SYS 2: 0,
+    MSVDD 1: 0, mem +3000, core offsets, voltage_boost 100; daemon reapplies
+    the profile ~5 s after start (apply_settings_timer: 5).
+    Caveats recorded: (1) stop the manual debug daemon before enable --now —
+    one daemon owns the socket; (2) the desktop launcher runs STOCK 0.10.1 GUI,
+    which cannot see the fork-only config fields — clicking Apply there risks
+    saving the config without them; use the fork GUI for this daemon; (3) the
+    box has a second GPU (AMD 1002:13C0 at 78:00.0) — probe worked anyway
+    (nvidia0 = the 4090), noted for the record.
   - UPSTREAM DATA POINT (drafted, pending owner's post to #1147/#1158):
     first AD102/R615 topology table; all-type-5 (no ratio control on this
     card); bare rail write rejected 0x2c while frequency writes on the same
